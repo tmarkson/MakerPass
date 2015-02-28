@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  .row
+    h1 MakerPass Nodes
+    table.table
+      thead
+        tr
+          th ID
+          th Name
+          th Interface
+          th Auth ID
+      tbody
+        each node in nodes
+          tr
+            td
+              a( href="/node/#{node.id}" )= node.id
+            td= node.name
+            td= node.interface ? node.interface.name : ''
+            td= node.authid

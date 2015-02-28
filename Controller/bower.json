@@ -1,0 +1,15 @@
+{
+  "name": "makerpass",
+  "version": "0.0.1",
+  "dependencies": {
+    "jquery": "",
+    "jquery-ui": "",
+    "bootstrap": "",
+    "html5shiv": "",
+    "respond": "",
+    "font-awesome": "",
+    "bootstrap3-switch": "",
+    "seiyria-bootstrap-slider": "",
+    "underscore": ""
+  }
+}

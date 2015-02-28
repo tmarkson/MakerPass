@@ -1,0 +1,10 @@
+.value {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}
+.value:hover {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}

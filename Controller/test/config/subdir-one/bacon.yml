@@ -1,0 +1,14 @@
+---
+id: bacon-example
+
+description: Bacon Example
+
+interface: Fake
+
+inputs:
+  1: bacon_button
+
+outputs:
+  1: bacon_cooker
+  2: toaster
+  3: buzzer

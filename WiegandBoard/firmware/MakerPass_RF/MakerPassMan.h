@@ -15,11 +15,12 @@
 #define statusLedPin_G A1
 #define statusLedPin_B A2
 
-#define SUPERVISOR_ENABLE_VALUE 0
-#define SUPERVISOR_DISABLE_VALUE 1
+#define SUPERVISOR_ENABLE_VALUE HIGH
+#define SUPERVISOR_DISABLE_VALUE LOW
 
 Timer t;
 int8_t currentTimerId = -1;
+int8_t currentOutput = -1;
 // int8_t activeTimers[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
 
@@ -79,39 +80,52 @@ void setStatusBlink_AUTHORIZED()
 }
 */
 
+void resetSupervisorIds()
+{
+	currentTimerId = -1;
+	currentOutput = -1;
+}
+
+void supervisorDisableSystem()
+{
+	#if DEBUG
+		Serial.println( F( "Disable System and Outputs." ) );
+	#endif
+	digitalWrite( currentOutput , SUPERVISOR_DISABLE_VALUE );
+}
+
 void supervisorStopTimer()
 {
 	#if DEBUG
 		Serial.println( F( "Disable System." ) );
 	#endif
-	setStatus( OFF );
+	setStatus( BUSY );
+	supervisorDisableSystem();
 	t.stop( currentTimerId );
+	resetSupervisorIds();
+	setStatus( OFF );
 }
 
 uint16_t supervisorEnableSystem( uint16_t timeToEnable , uint8_t outputNum )
 {
 	setStatus( AUTHORIZED );
 
-	currentTimerId = t.after( ( timeToEnable * 1000 ) , supervisorStopTimer );	
+	currentOutput = outputNum;
+	pinMode( currentOutput , OUTPUT );
+	digitalWrite( currentOutput , SUPERVISOR_ENABLE_VALUE );
+
 	#if DEBUG
 		Serial.print( F( "Enable System for (sec): " ) );
 		Serial.print( timeToEnable );
 		Serial.print( F( "Start Timer ID = " ) );
 		Serial.print( currentTimerId );
 	#endif
-}
-
-void supervisorDisableSystem( uint8_t outputNum )
-{
-	#if DEBUG
-		Serial.println( F( "Disable System." ) );
-	#endif
-	setStatus( OFF );
-	digitalWrite( outputNum , SUPERVISOR_DISABLE_VALUE );   /* CHANGE THIS. let server dictate pins? */
+	return 1;
 }
 
 void supervisorStartTimer( uint16_t timeToEnable , uint8_t outputNum )
 {
+	currentTimerId = t.after( ( timeToEnable * 1000 ) , supervisorStopTimer );
 	supervisorEnableSystem( timeToEnable , outputNum );
 }
 

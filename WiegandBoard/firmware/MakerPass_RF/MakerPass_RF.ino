@@ -39,8 +39,8 @@ struct settingsStruct {
 {
 	"mp01",	 // id
 	9600,   // speed
-	{0,A3},	 // inputs
-	{0,A0,A1,A2},	 // outputs
+	{0,A0,A1,A2,A3,A4,A5},	 // inputs
+	{0,4,5,6,7,8,9,10},	 // outputs
 	SETTINGS_VERSION
 };
 
@@ -121,8 +121,9 @@ void setup()
 	delay(200);
 	setStatus( BUSY );
 	delay(200);
+	setStatus( OFF );
 
-	supervisorDisableSystem( 8 );
+	supervisorDisableSystem( );
 }
 
 void loop()
@@ -202,21 +203,22 @@ void CMD_pins ( int argc, char **argv ) {
 
 void CMD_timer ( int argc, char **argv )
 {
-	Serial.print( F( "{\"node_id\":\"" ) );
-	Serial.print( settings.id );
-	Serial.print( F( "\",\"node_message\":\"" ) );
+	uint8_t state=0, output=0;
+	Fstr *message;
 
 	if ( argc < 3 )
 	{
-		Serial.print( F( "Timer not started." ) );
-		Serial.println( F( "\"}" ) );
-		return;
+		message = F( "Timer not started." );
 	} else
 	{
-		supervisorStartTimer( atoi( argv[2] ) , atoi( argv[3] ) );
-
-		Serial.print( F( "Timer started." ) );
+		output = atoi( argv[3] );
+		supervisorStartTimer( atoi( argv[2] ) , settings.outputs[ output ] );
+		message = F( "Timer started." );
 	}
+	Serial.print( F( "{\"node_id\":\"" ) );
+	Serial.print( settings.id );
+	Serial.print( F( "\",\"node_message\":\"" ) );
+	Serial.print( message );
 	Serial.println( F( "\"}" ) );
 }
 
@@ -264,7 +266,7 @@ void CMD_set( int argc, char **argv )
 {
 	if ( argc < 3 ) return;
 
-	uint8_t state=255, output=0, pin=0;
+	uint8_t state=0, output=0, pin=0;
 
 	if ( argc > 2 ) output = atoi( argv[2] );
 	if ( argc > 3 ) state = atoi( argv[3] );
@@ -292,12 +294,12 @@ void CMD_set( int argc, char **argv )
 	// if state is valid, set pin to desired state
 	if ( state == 0 || state == 1 )
 	{
-		pinMode( settings.outputs[ output ] , OUTPUT );
+		pinMode( pin , OUTPUT );
 		digitalWrite( pin , state );
 	}
 	else if ( state <= 255 )
 	{
-		pinMode( settings.outputs[ output ] , OUTPUT );
+		pinMode( pin , OUTPUT );
 		analogWrite( pin , state );
 	}
 	else

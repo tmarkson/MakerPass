@@ -8,5 +8,9 @@
 #define INPUTS_SAMPLE_COUNT 10
 
 #include <stdint.h>
+#include <Arduino.h>
+
+typedef const __FlashStringHelper Fstr;
+
 
 #endif
